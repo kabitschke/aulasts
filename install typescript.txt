@@ -1,0 +1,18 @@
+npm install -g typescript
+
+tsc --init
+
+no arquivo tsconfig.json cole
+
+
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "strict": true
+  }
+}
+
+
+depois para monitorar as atualizações digite no terminal
+
+tsc -w
