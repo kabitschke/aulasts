@@ -1,33 +1,44 @@
 "use strict";
-const nome = document.querySelector('#nome');
-const email = document.querySelector('#email');
-const senha = document.querySelector('#senha');
-const btn = document.querySelector('#btn');
-const handleSubmit = (e) => {
-    e.preventDefault();
-    if (nome?.value && email?.value && senha?.value) {
-        const data = {
-            nome: nome.value,
-            email: email.value,
-            senha: senha.value,
-        };
-        localStorage.setItem('UserData', JSON.stringify(data));
-        nome.value = '';
-        email.value = '';
-        senha.value = '';
+window.UserData = {};
+function isUserData(obj) {
+    if (obj && typeof obj === 'object' && ('nome' in obj || 'cpf' in obj || 'email' in obj)) {
+        return true;
     }
     else {
-        console.log('Preencha os dados...');
+        return false;
     }
-};
-const fillInput = () => {
-    const items = localStorage.getItem('UserData');
-    if (items && nome && email && senha) {
-        const dados = JSON.parse(items);
-        nome.value = dados.nome;
-        email.value = dados.email;
-        senha.value = dados.senha;
+}
+function validJSON(str) {
+    try {
+        JSON.parse(str);
     }
-};
-fillInput();
-btn?.addEventListener('click', handleSubmit);
+    catch (e) {
+        return false;
+    }
+    return true;
+}
+function loadLocalStorage() {
+    const localUserData = localStorage.getItem('UserData');
+    if (localUserData && validJSON(localUserData)) {
+        const UserData = JSON.parse(localUserData);
+        if (isUserData(UserData)) {
+            Object.entries(UserData).forEach(([key, value]) => {
+                const input = document.getElementById(key);
+                if (input instanceof HTMLInputElement) {
+                    input.value = value;
+                    window.UserData[key] = value;
+                }
+            });
+        }
+    }
+}
+loadLocalStorage();
+function handleInput({ target }) {
+    if (target instanceof HTMLInputElement) {
+        window.UserData[target.id] = target.value;
+        //target id é a chave do objeto ex 'nome:' target.value atribui o valor.
+        localStorage.setItem('UserData', JSON.stringify(window.UserData));
+    }
+}
+const form = document.querySelector("#form");
+form?.addEventListener('keyup', handleInput);
