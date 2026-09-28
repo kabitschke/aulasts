@@ -1,28 +1,33 @@
 "use strict";
-async function fetchProduto() {
-    const response = await fetch('https://api.origamid.dev/json/cursos.json');
-    const json = await response.json();
-    handleCursos(json);
-}
-function isCurso(value) {
-    if (value &&
-        typeof value === 'object' &&
-        'nome' in value &&
-        'nivel' in value) {
-        return true;
+const nome = document.querySelector('#nome');
+const email = document.querySelector('#email');
+const senha = document.querySelector('#senha');
+const btn = document.querySelector('#btn');
+const handleSubmit = (e) => {
+    e.preventDefault();
+    if (nome?.value && email?.value && senha?.value) {
+        const data = {
+            nome: nome.value,
+            email: email.value,
+            senha: senha.value,
+        };
+        localStorage.setItem('UserData', JSON.stringify(data));
+        nome.value = '';
+        email.value = '';
+        senha.value = '';
     }
     else {
-        return false;
+        console.log('Preencha os dados...');
     }
-}
-function handleCursos(data) {
-    if (Array.isArray(data)) {
-        data.filter(isCurso).forEach(item => {
-            document.body.innerHTML += `
-      <h2>${item.nome}</h2>
-      
-      `;
-        });
+};
+const fillInput = () => {
+    const items = localStorage.getItem('UserData');
+    if (items && nome && email && senha) {
+        const dados = JSON.parse(items);
+        nome.value = dados.nome;
+        email.value = dados.email;
+        senha.value = dados.senha;
     }
-}
-fetchProduto();
+};
+fillInput();
+btn?.addEventListener('click', handleSubmit);

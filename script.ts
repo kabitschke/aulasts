@@ -1,39 +1,47 @@
-async function fetchProduto() {
-  const response = await fetch('https://api.origamid.dev/json/cursos.json');
-  const json = await response.json();
-  handleCursos(json);
-}
+const nome = document.querySelector<HTMLInputElement>('#nome');
+const email = document.querySelector<HTMLInputElement>('#email');
+const senha = document.querySelector<HTMLInputElement>('#senha');
+const btn = document.querySelector('#btn');
 
-interface Curso {
+interface UserData {
   nome: string;
-  nivel: string;
+  email: string;
+  senha: string;
 }
 
-function isCurso(value: unknown): value is Curso {
-  if (
-    value &&
-    typeof value === 'object' &&
-    'nome' in value &&
-    'nivel' in value
-  ) {
-    return true;
+
+const handleSubmit = (e: Event) => {
+  e.preventDefault();
+  if (nome?.value && email?.value && senha?.value) {
+    const data: UserData = {
+      nome: nome.value,
+      email: email.value,
+      senha: senha.value,
+    }
+    localStorage.setItem('UserData', JSON.stringify(data));
+    nome.value = '';
+    email.value = '';
+    senha.value = '';
   } else {
-    return false;
+    console.log('Preencha os dados...');
   }
+
 }
 
+const fillInput = () => {
+  const items = localStorage.getItem('UserData');
+  if (items && nome && email && senha) {
+    const dados = JSON.parse(items);
 
-function handleCursos(data: unknown) {
-  if (Array.isArray(data)) {
-
-    data.filter(isCurso).forEach(item => {
-      document.body.innerHTML += `
-      <h2>${item.nome}</h2>
-      
-      `
-    })
+    nome.value = dados.nome;
+    email.value = dados.email;
+    senha.value = dados.senha;
 
 
   }
+
+
 }
-fetchProduto();
+
+fillInput();
+btn?.addEventListener('click', handleSubmit);
