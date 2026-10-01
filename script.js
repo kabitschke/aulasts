@@ -9,7 +9,7 @@ const handleKeyup = (e) => {
         if (input.value === '')
             return;
         const li = document.createElement('li');
-        li.innerHTML = input.value;
+        li.textContent = input.value;
         ul.appendChild(li);
         input.value = '';
     }
