@@ -1,17 +1,14 @@
 "use strict";
-const input = document.querySelector('input');
-const ul = document.querySelector("ul");
-if (!input || !ul) {
-    throw new Error('Elementos input ou ul não encontrados');
+async function statics() {
+    const response = await fetch(`https://api.origamid.dev/json/transacoes.json`);
+    const data = await response.json();
+    listStatics(data);
 }
-const handleKeyup = (e) => {
-    if (e.key === 'Enter') {
-        if (input.value === '')
-            return;
-        const li = document.createElement('li');
-        li.textContent = input.value;
-        ul.appendChild(li);
-        input.value = '';
-    }
-};
-input.addEventListener('keyup', handleKeyup);
+function listStatics(data) {
+    data.map((item) => {
+        document.body.innerHTML = `
+<div>${item.Nome}</div>
+`;
+    });
+}
+statics();

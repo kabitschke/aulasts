@@ -1,23 +1,31 @@
-const input = document.querySelector<HTMLInputElement>('input');
-const ul = document.querySelector<HTMLUListElement>("ul");
-
-
-if (!input || !ul) {
-  throw new Error('Elementos input ou ul não encontrados');
+interface Props {
+  ClienteNovo: number;
+  Data: string;
+  Email: string;
+  FormaDePagamento: string;
+  ID: number;
+  Nome: string;
+  Status: string;
+  Valor: string;
 }
 
-const handleKeyup = (e: KeyboardEvent) => {
-  if (e.key === 'Enter') {
-    if (input.value === '') return;
-    const li = document.createElement('li');
-    li.textContent = input.value;
-    ul.appendChild(li);
-    input.value = '';
-
-  }
-
+async function statics() {
+  const response = await fetch(`https://api.origamid.dev/json/transacoes.json`);
+  const data = await response.json();
+  listStatics(data);
 }
 
 
 
-input.addEventListener('keyup', handleKeyup);
+function listStatics(data: Props[]) {
+  data.map((item) => {
+    document.body.innerHTML = `
+<div>${item.Nome}</div>
+`
+  })
+
+}
+
+
+
+statics();
