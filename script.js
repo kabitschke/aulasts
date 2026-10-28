@@ -98,13 +98,32 @@ function listStatics(data) {
 
   <div class="area">
    <h2>Dados</h2>
+
+  <table> 
+    <thead>
+        <tr>
+      <th>Nome</th>
+      <th class='email'>Email</th>
+      <th>Compra</th>
+      <th>Pagamento</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
     ${data
         .map((item) => `
-          <div>${item.valor}</div>
-         
-          <div>${item.nome}</div>
+    <tr>
+      <td>${item.nome}</td>
+      <td class='email'>${item.email}</td>
+      <td>${item.valor}</td>
+      <td>${item.formadepagamento}</td>
+      <td>${item.status}</td>
+    </tr>   
+  
         `)
         .join("")}
+      </tbody>  
+</table>
   </div>`;
 }
 statics();
