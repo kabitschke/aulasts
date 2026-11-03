@@ -237,3 +237,7 @@ li::after {
   border-radius: 5px;
 
 }
+
+h2 {
+  margin: .4rem;
+}
