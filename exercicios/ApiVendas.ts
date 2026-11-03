@@ -1,62 +1,112 @@
-"use strict";
-function normalizeKeys(data) {
+interface Props {
+    clientenovo: number;
+    data: string;
+    email: string;
+    formadepagamento: string;
+    id: number;
+    nome: string;
+    status: string;
+    valor: string;
+}
+
+
+function normalizeKeys(data: Props[]) {
     return data.map((item) => {
         const entries = Object.entries(item).map(([key, value]) => {
             if (key === "Valor (R$)") {
                 key = "valor";
-            }
-            else {
+            } else {
                 key = key.toLowerCase().replace(/\s/g, "");
             }
+
             return [key, value];
         });
         return Object.fromEntries(entries);
+
     });
 }
+
+
+
+
 async function statics() {
     const response = await fetch(`https://api.origamid.dev/json/transacoes.json`);
     const data = await response.json();
     const normalizedData = normalizeKeys(data);
     listStatics(normalizedData);
     totalVendas(normalizedData);
+
 }
-function totalVendas(data) {
+
+
+
+function totalVendas(data: Props[]) {
     const total = data.reduce((acc, item) => {
         const valorTexto = item.valor.trim();
+
         if (valorTexto === "-") {
             return acc;
         }
-        const valor = Number(valorTexto
-            .replace(/\./g, "")
-            .replace(",", "."));
+
+        const valor = Number(
+            valorTexto
+                .replace(/\./g, "")
+                .replace(",", ".")
+        );
+
         return acc + valor;
     }, 0);
+
     return total;
 }
-function listStatics(data) {
+
+
+
+
+function listStatics(data: Props[]) {
     const total = totalVendas(data);
-    const abreviacoes = {
+
+    const abreviacoes: Record<string, string> = {
         'recusada pela operadora de cartão': 'recusada',
         'aguardando pagamento': 'pendente',
         'cartão de crédito': 'credito',
     };
+
+
     const formadepagamento = data.reduce((acc, item) => {
         const forma = item.formadepagamento.toLocaleLowerCase().trim();
+
         const chave = abreviacoes[forma] || forma;
         //se o valor estiver em abreviacoes utiliza ele ou o valor original
+
+
         acc[chave] = (acc[chave] || 0) + 1;
+
         return acc;
-    }, {});
+    }, {} as Record<string, number>);
+
+
+
     const contagemStatus = data.reduce((acc, item) => {
         const statusOriginal = item.status.toLocaleLowerCase().trim();
         const status = abreviacoes[statusOriginal] || statusOriginal;
+
         acc[status] = (acc[status] || 0) + 1;
+
         return acc;
-    }, {});
+    }, {} as Record<string, number>);
+
+
     const vendasPorDia = data.reduce((acc, item) => {
         const [dataParte] = item.data.split(' ');
         const [dia, mes, ano] = dataParte.split('/');
-        const dataVenda = new Date(Number(ano), Number(mes) - 1, Number(dia));
+
+        const dataVenda = new Date(
+            Number(ano),
+            Number(mes) - 1,
+            Number(dia)
+        );
+
         const diasSemana = [
             'domingo',
             'segunda',
@@ -66,14 +116,26 @@ function listStatics(data) {
             'sexta',
             'sábado',
         ];
+
         const diaSemana = diasSemana[dataVenda.getDay()];
+
         acc[diaSemana] = (acc[diaSemana] || 0) + 1;
+
         return acc;
-    }, {});
+    }, {} as Record<string, number>);
+
+
     const diaComMaisVendas = Object.entries(vendasPorDia)
         .sort((a, b) => b[1] - a[1])[0];
+
     //console.log('Dia com mais vendas:', diaComMaisVendas[0]);
     //console.log('Quantidade:', diaComMaisVendas[1]);
+
+
+
+
+
+
     document.body.innerHTML = `
   <div class="area">
     <h2>Estatísticas</h2>
@@ -111,7 +173,8 @@ function listStatics(data) {
   </thead>
   <tbody>
     ${data
-        .map((item) => `
+            .map(
+                (item) => `
     <tr>
       <td>${item.nome}</td>
       <td class='email'>${item.email}</td>
@@ -120,10 +183,15 @@ function listStatics(data) {
       <td>${item.status}</td>
     </tr>   
   
-        `)
-        .join("")}
+        `
+            )
+            .join("")}
       </tbody>  
 </table>
-  </div>`;
+  </div>`
+        ;
 }
+
+
+
 statics();
